@@ -27,7 +27,7 @@ use risingwave_pb::plan::plan_node::NodeBody;
 use crate::executor::{BoxedExecutor, BoxedExecutorBuilder, Executor, ExecutorBuilder};
 
 /// `ValuesExecutor` implements Values executor.
-pub(super) struct ValuesExecutor {
+pub struct ValuesExecutor {
     rows: vec::IntoIter<Vec<BoxedExpression>>,
     schema: Schema,
     identity: String,

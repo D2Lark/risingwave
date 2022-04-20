@@ -19,7 +19,6 @@ use hash_agg::*;
 use limit::*;
 use merge_sort_exchange::*;
 use order_by::*;
-use projection::*;
 use risingwave_common::array::DataChunk;
 use risingwave_common::catalog::Schema;
 use risingwave_common::error::ErrorCode::InternalError;
@@ -43,7 +42,9 @@ use crate::executor::stream_scan::StreamScanExecutor;
 use crate::executor::trace::TraceExecutor;
 use crate::executor::values::ValuesExecutor;
 use crate::executor2::executor_wrapper::ExecutorWrapper;
-use crate::executor2::{BoxedExecutor2, BoxedExecutor2Builder, FilterExecutor2, TraceExecutor2};
+use crate::executor2::{
+    BoxedExecutor2, BoxedExecutor2Builder, FilterExecutor2, ProjectionExecutor2, TraceExecutor2,
+};
 use crate::task::{BatchEnvironment, TaskId};
 
 mod create_source;
@@ -62,14 +63,13 @@ mod limit;
 mod merge_sort_exchange;
 pub mod monitor;
 mod order_by;
-mod projection;
 mod row_seq_scan;
 mod sort_agg;
 mod stream_scan;
 pub mod test_utils;
 mod top_n;
 mod trace;
-mod values;
+pub mod values;
 
 /// `Executor` is an operator in the query execution.
 #[async_trait::async_trait]
@@ -196,7 +196,7 @@ impl<'a> ExecutorBuilder<'a> {
             NodeBody::DropTable => DropTableExecutor,
             NodeBody::Exchange => ExchangeExecutor,
             NodeBody::Filter => FilterExecutor2,
-            NodeBody::Project => ProjectionExecutor,
+            NodeBody::Project => ProjectionExecutor2,
             NodeBody::SortAgg => SortAggExecutor,
             NodeBody::OrderBy => OrderByExecutor,
             NodeBody::CreateSource => CreateSourceExecutor,
@@ -225,7 +225,7 @@ impl<'a> ExecutorBuilder<'a> {
             NodeBody::DropTable => DropTableExecutor,
             NodeBody::Exchange => ExchangeExecutor,
             NodeBody::Filter => FilterExecutor2,
-            NodeBody::Project => ProjectionExecutor,
+            NodeBody::Project => ProjectionExecutor2,
             NodeBody::SortAgg => SortAggExecutor,
             NodeBody::OrderBy => OrderByExecutor,
             NodeBody::CreateSource => CreateSourceExecutor,

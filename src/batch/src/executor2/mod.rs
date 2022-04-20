@@ -14,7 +14,9 @@
 
 pub mod executor_wrapper;
 mod filter;
+mod projection;
 pub use filter::*;
+pub use projection::*;
 mod trace;
 use futures::stream::BoxStream;
 use risingwave_common::array::DataChunk;
