@@ -43,7 +43,7 @@ fn configure_risingwave_targets_jaeger(targets: filter::Targets) -> filter::Targ
 fn configure_risingwave_targets_fmt(targets: filter::Targets) -> filter::Targets {
     targets
         // enable trace for most modules
-        .with_target("risingwave_stream", Level::DEBUG)
+        .with_target("risingwave_stream", Level::TRACE)
         .with_target("risingwave_batch", Level::DEBUG)
         .with_target("risingwave_storage", Level::DEBUG)
         .with_target("risingwave_sqlparser", Level::INFO)
