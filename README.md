@@ -32,10 +32,8 @@ tar xvf risingwave-v0.1.7-x86_64-unknown-linux.tar.gz
 Currently, only x86_64 is supported. We will provide arm64 builds in the future.
 
 ```shell
-# Pull nightly build of RisingWave
-docker pull ghcr.io/singularity-data/risingwave:latest
 # Start RisingWave in single-binary playground mode
-docker run -it --network host ghcr.io/singularity-data/risingwave:latest playground
+docker run -it --pull=always -p 4566:4566 -p 5691:5691 ghcr.io/singularity-data/risingwave:latest playground
 ```
 
 **Compile from Source with [RiseDev](docs/developer-guide.md#set-up-the-development-environment) (Linux and macOS)**

@@ -136,11 +136,11 @@ where
                 same_worker_node_as_upstream: bool,
             ) -> Result<()> {
                 let Some(NodeBody::Chain(ref mut chain)) = stream_node.node_body else {
-                        // If node is not chain node, recursively deal with input nodes
-                        for input in &mut stream_node.input {
-                            self.resolve_chain_node_inner(input, actor_id, same_worker_node_as_upstream)?;
-                        }
-                        return Ok(());
+                    // If node is not chain node, recursively deal with input nodes
+                    for input in &mut stream_node.input {
+                        self.resolve_chain_node_inner(input, actor_id, same_worker_node_as_upstream)?;
+                    }
+                    return Ok(());
                 };
                 // If node is chain node, we insert upstream ids into chain's input (merge)
 
@@ -671,8 +671,6 @@ where
 
         Ok(())
     }
-
-    // fn
 }
 
 #[cfg(test)]
@@ -878,6 +876,7 @@ mod tests {
                     cluster_manager.clone(),
                     barrier_manager.clone(),
                     catalog_manager.clone(),
+                    fragment_manager.clone(),
                 )
                 .await?,
             );
@@ -963,17 +962,18 @@ mod tests {
             .await?;
 
         for actor in actors {
-            assert_eq!(
-                services
-                    .state
-                    .actor_streams
-                    .lock()
-                    .unwrap()
-                    .get(&actor.get_actor_id())
-                    .cloned()
-                    .unwrap(),
-                actor
-            );
+            let mut scheduled_actor = services
+                .state
+                .actor_streams
+                .lock()
+                .unwrap()
+                .get(&actor.get_actor_id())
+                .cloned()
+                .unwrap()
+                .clone();
+            assert!(!scheduled_actor.vnode_bitmap.is_empty());
+            scheduled_actor.vnode_bitmap.clear();
+            assert_eq!(scheduled_actor, actor);
             assert!(services
                 .state
                 .actor_ids

@@ -193,7 +193,12 @@ pub struct MergeSortExchangeExecutorBuilder {}
 impl BoxedExecutorBuilder for MergeSortExchangeExecutorBuilder {
     async fn new_boxed_executor<C: BatchTaskContext>(
         source: &ExecutorBuilder<C>,
+        inputs: Vec<BoxedExecutor>,
     ) -> Result<BoxedExecutor> {
+        ensure!(
+            inputs.is_empty(),
+            "MergeSortExchangeExecutor should not have child!"
+        );
         let sort_merge_node = try_match_expand!(
             source.plan_node().get_node_body().unwrap(),
             NodeBody::MergeSortExchange
@@ -217,7 +222,7 @@ impl BoxedExecutorBuilder for MergeSortExchangeExecutorBuilder {
 
         let num_sources = proto_sources.len();
         Ok(Box::new(MergeSortExchangeExecutor::<C> {
-            context: source.batch_task_context().clone(),
+            context: source.context().clone(),
             source_inputs: vec![None; num_sources],
             order_pairs,
             min_heap: BinaryHeap::new(),
